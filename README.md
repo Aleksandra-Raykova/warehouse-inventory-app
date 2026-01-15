@@ -1,0 +1,1 @@
+Django REST app project for warehouse inventory
