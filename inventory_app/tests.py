@@ -1,5 +1,5 @@
 from django.test import TestCase
-from users.models import Category, Item
+from inventory_app.models import Category, Item
 
 
 class ItemStockStatusTest(TestCase):
