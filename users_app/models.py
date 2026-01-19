@@ -28,6 +28,17 @@ class CustomUserManager(BaseUserManager):
 
 
 class CustomUser(AbstractBaseUser, PermissionsMixin):
+    """
+    User with username field = email, first and last name (optional), and password.
+    email - max_length=150, unique.
+    first_name - max_length=150.
+    last_name - max_length=150.
+
+    Additional fields (not included in the form, but can be edited in the admin site):
+    is_active = True
+    is_staff = False
+    is_superuser = False
+    """
     email = models.EmailField(
         max_length=150,
         unique=True,
@@ -48,7 +59,7 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
         help_text="Designates whether the user can log into this admin site.",
     )
 
-    date_joined = models.DateTimeField(default=timezone.now)
+    date_joined = models.DateTimeField(editable=False, default=timezone.now)
 
     objects = CustomUserManager()
 
