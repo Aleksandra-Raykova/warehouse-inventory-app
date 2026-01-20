@@ -1,6 +1,7 @@
 from django.test import TestCase
 
 from users_app.models import CustomUser
+from users_app.serializers import UserSerializer
 
 class CustomUserModelTest(TestCase):
     def setUp(self):
@@ -53,3 +54,52 @@ class CustomUserManagerTest(TestCase):
             CustomUser.objects.create_superuser(email="test@test.com", password="123456789", is_superuser=False)
         self.assertEqual(str(error.exception), 'Superuser must have is_superuser=True.')
 
+
+class UserSerializerTest(TestCase):
+    def test_serializer_creates_user_correct(self):
+        data = {
+            "email": "test@test.com",
+            "first_name": "Test",
+            "last_name": "User",
+            "password": "123456789",
+            "password2": "123456789",
+        }
+
+        serializer = UserSerializer(data=data)
+        self.assertTrue(serializer.is_valid(), serializer.errors)
+
+        user = serializer.save()
+
+        self.assertEqual(user.email, "test@test.com")
+        self.assertTrue(user.check_password("123456789"))
+
+    def test_serializer_raises_error_with_different_passwords(self):
+        data = {
+            "email": "test@test.com",
+            "password": "123456789",
+            "password2": "000000000",
+        }
+
+        serializer = UserSerializer(data=data)
+
+        self.assertFalse(serializer.is_valid())
+        self.assertIn("non_field_errors", serializer.errors)
+        self.assertIn("Passwords must be the same", serializer.errors["non_field_errors"])
+
+    def test_password2_is_write_only(self):
+        user = CustomUser.objects.create_user(
+            email="test@test.com",
+            password="secret123"
+        )
+
+        serializer = UserSerializer(user)
+        self.assertNotIn("password2", serializer.data)
+
+    def test_password_is_write_only(self):
+        user = CustomUser.objects.create_user(
+            email="test@test.com",
+            password="secret123"
+        )
+
+        serializer = UserSerializer(user)
+        self.assertNotIn("password", serializer.data)
