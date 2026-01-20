@@ -26,3 +26,30 @@ class CustomUserModelTest(TestCase):
         self.assertTrue(self.u.is_active)
         self.assertFalse(self.u.is_staff)
         self.assertFalse(self.u.is_superuser)
+
+
+class CustomUserManagerTest(TestCase):
+    def test_create_superuser_works_correct(self):
+        user = CustomUser.objects.create_superuser("test@test.com", "123456789")
+        self.assertEqual(user.email, "test@test.com")
+        self.assertTrue(user.check_password("123456789"))
+        self.assertTrue(user.is_staff)
+        self.assertTrue(user.is_superuser)
+        self.assertTrue(user.is_active)
+
+    def test_user_must_have_email_when_created(self):
+        with self.assertRaises(ValueError) as error:
+            CustomUser.objects.create_user(email="", password="132456789")
+
+        self.assertEqual(str(error.exception), "Users must have an email address")
+
+    def test_superuser_cannot_be_is_staff_False(self):
+        with self.assertRaises(ValueError) as error:
+            CustomUser.objects.create_superuser(email="test@test.com", password="123456789", is_staff=False)
+        self.assertEqual(str(error.exception), 'Superuser must have is_staff=True.')
+
+    def test_superuser_cannot_be_is_superuser_False(self):
+        with self.assertRaises(ValueError) as error:
+            CustomUser.objects.create_superuser(email="test@test.com", password="123456789", is_superuser=False)
+        self.assertEqual(str(error.exception), 'Superuser must have is_superuser=True.')
+
