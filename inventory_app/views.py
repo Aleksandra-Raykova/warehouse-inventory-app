@@ -36,7 +36,7 @@ def item(request, pk: int):
         if serializer.is_valid():
             serializer.save()
             return Response(data=serializer.data)
-        return Response(status=status.HTTP_204_NO_CONTENT)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     elif request.method == 'DELETE':
         inventory_item.delete()
