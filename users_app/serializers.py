@@ -5,7 +5,7 @@ from users_app.models import CustomUser
 from rest_framework import serializers
 
 
-class UserSerializer(serializers.ModelSerializer):
+class UserRegisterSerializer(serializers.ModelSerializer):
     password2 = serializers.CharField(
         max_length=150,
         min_length=5,

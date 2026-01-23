@@ -2,7 +2,7 @@ from django.shortcuts import render
 from rest_framework import status
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.response import Response
-from users_app.serializers import UserSerializer, LoginSerializer
+from users_app.serializers import UserRegisterSerializer, LoginSerializer
 from rest_framework.authtoken.models import Token
 
 
@@ -10,7 +10,7 @@ from rest_framework.authtoken.models import Token
 @api_view(['POST'])
 def register(request):
     if request.method == 'POST':
-        serializer = UserSerializer(data=request.data)
+        serializer = UserRegisterSerializer(data=request.data)
         if serializer.is_valid():
             user = serializer.save()
             token = Token.objects.create(user=user)
@@ -31,6 +31,6 @@ def login(request):
     else:
         return Response(data=serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-
+#get
 #edit
 #delete

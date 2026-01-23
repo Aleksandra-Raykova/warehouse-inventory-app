@@ -1,7 +1,7 @@
 from django.test import TestCase
 
 from users_app.models import CustomUser
-from users_app.serializers import UserSerializer
+from users_app.serializers import UserRegisterSerializer
 
 class CustomUserModelTest(TestCase):
     def setUp(self):
@@ -65,7 +65,7 @@ class UserSerializerTest(TestCase):
             "password2": "123456789",
         }
 
-        serializer = UserSerializer(data=data)
+        serializer = UserRegisterSerializer(data=data)
         self.assertTrue(serializer.is_valid(), serializer.errors)
 
         user = serializer.save()
@@ -80,7 +80,7 @@ class UserSerializerTest(TestCase):
             "password2": "000000000",
         }
 
-        serializer = UserSerializer(data=data)
+        serializer = UserRegisterSerializer(data=data)
 
         self.assertFalse(serializer.is_valid())
         self.assertIn("non_field_errors", serializer.errors)
@@ -92,7 +92,7 @@ class UserSerializerTest(TestCase):
             password="secret123"
         )
 
-        serializer = UserSerializer(user)
+        serializer = UserRegisterSerializer(user)
         self.assertNotIn("password2", serializer.data)
 
     def test_password_is_write_only(self):
@@ -101,5 +101,5 @@ class UserSerializerTest(TestCase):
             password="secret123"
         )
 
-        serializer = UserSerializer(user)
+        serializer = UserRegisterSerializer(user)
         self.assertNotIn("password", serializer.data)
