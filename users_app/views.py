@@ -1,8 +1,11 @@
-from django.shortcuts import render
+from django.shortcuts import render, get_object_or_404
 from rest_framework import status
 from rest_framework.decorators import api_view, permission_classes
+from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
-from users_app.serializers import UserRegisterSerializer, LoginSerializer
+
+from users_app.models import CustomUser
+from users_app.serializers import UserRegisterSerializer, LoginSerializer, UserUpdateSerializer
 from rest_framework.authtoken.models import Token
 
 
@@ -31,6 +34,14 @@ def login(request):
     else:
         return Response(data=serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-#get
-#edit
-#delete
+
+@api_view(['PATCH'])
+@permission_classes([IsAuthenticated])
+def update(request, pk):
+    user_instance = get_object_or_404(CustomUser, id=pk)
+    serializer = UserUpdateSerializer(instance=user_instance, data=request.data, partial=True)
+    if serializer.is_valid():
+        serializer.save()
+        return Response(data=serializer.data)
+    else:
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
