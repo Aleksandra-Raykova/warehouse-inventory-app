@@ -9,18 +9,22 @@ from inventory_app import serializers
 
 @api_view(['GET', 'POST'])
 def items_list(request):
+    """On the /items url client can get or post information about items"""
+
     if request.method == 'GET':
+        """Gets all items data"""
+
         items = models.Item.objects.all()
         serializer = serializers.ItemSerializer(instance=items, many=True)
         return Response(serializer.data)
     if request.method == "POST":
+        """Adds one new item data if it is valid; else show errors and return http 400"""
+
         serializer = serializers.ItemSerializer(data=request.data)
         if serializer.is_valid():
             serializer.save()
             return Response(data=serializer.data)
-        return Response(status=status.HTTP_204_NO_CONTENT)
-    else:
-        return Response(status=status.HTTP_400_BAD_REQUEST)
+        return Response(data=serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
 @api_view(['GET', 'PUT', 'DELETE'])
