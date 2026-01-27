@@ -29,13 +29,17 @@ def items_list(request):
 
 @api_view(['GET', 'PUT', 'DELETE'])
 def item(request, pk: int):
+    """The item/pk/ endpoint allows clients to get, put or delete particular item by id"""
+
     inventory_item = get_object_or_404(models.Item, id=pk)
 
     if request.method == 'GET':
+        """Get particular item by id"""
         serializer = serializers.ItemSerializer(instance=inventory_item)
         return Response(data=serializer.data)
 
     elif request.method == 'PUT':
+        """Change (all) item data if valid; else show errors and http 400"""
         serializer = serializers.ItemSerializer(instance=inventory_item, data=request.data)
         if serializer.is_valid():
             serializer.save()
@@ -43,11 +47,9 @@ def item(request, pk: int):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     elif request.method == 'DELETE':
+        """Delete item by id and return http 204"""
         inventory_item.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
-
-    else:
-        return Response(status=status.HTTP_400_BAD_REQUEST)
 
 
 @api_view(['GET', 'POST'])
